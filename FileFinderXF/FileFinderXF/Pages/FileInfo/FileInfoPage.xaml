@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileFinderXF.FileInfoPage"
+             Visual="Material"
+             x:Name="Root">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding PickFileCommand}" Text="Pick file" IconImageSource="add.png" />
+    </ContentPage.ToolbarItems>
+    
+    <ContentPage.Content>
+        <Grid>
+            <!-- File info content -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListView
+                Header="Filer"
+                Margin="20"
+                ItemsSource="{Binding Files}"
+                SelectionMode="None"
+                HasUnevenRows="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.ContextActions>
+                                <MenuItem Text="Preview" Command="{Binding BindingContext.OpenFileCommand, Source={x:Reference Root}}" CommandParameter="{Binding .}" />
+                                <MenuItem Text="Edit" Command="{Binding BindingContext.EditFileCommand, Source={x:Reference Root}}" CommandParameter="{Binding .}" />
+                                <MenuItem Text="Delete" Command="{Binding BindingContext.RemoveFileCommand, Source={x:Reference Root}}" CommandParameter="{Binding .}" IsDestructive="True" />
+                            </ViewCell.ContextActions>
+                            <StackLayout Padding="10">
+                                <Label 
+                                    Text="Filename" />
+                                <Label
+                                    IsVisible="{Binding IsEditOn, Converter={StaticResource InvertedBoolConv}}"
+                                    Text="{Binding FileName}" 
+                                    FontSize="Medium" />
+                                <Entry
+                                    IsVisible="{Binding IsEditOn}"
+                                    Text="{Binding FileName, Mode=TwoWay}" />
+                                <Label 
+                                    Text="Tag" />
+                                <Label
+                                    IsVisible="{Binding IsEditOn, Converter={StaticResource InvertedBoolConv}}"
+                                    Text="{Binding SelectedFileType}" 
+                                    FontSize="Medium" />
+                                <Picker 
+                                    IsVisible="{Binding IsEditOn}"
+                                    ItemsSource="{Binding BindingContext.FileTypeSource, Source={x:Reference Root}}"
+                                    SelectedItem="{Binding SelectedFileType, Mode=TwoWay}" />
+                                <Button 
+                                    IsVisible="{Binding IsEditOn}"
+                                    Text="&#xf00c;" 
+                                    BackgroundColor="{StaticResource PrimaryColor}"
+                                    TextColor="White"
+                                    FontFamily="{StaticResource FontAwesomeSolid}"
+                                    Command="{Binding EditDoneCommand}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button 
+                Grid.Row="1"
+                Margin="20"
+                HorizontalOptions="Fill"
+                Text="Send files"
+                BackgroundColor="{StaticResource PrimaryColor}"
+                TextColor="White"
+                Command="{Binding SendFilesCommand}" />
+            <!-- Loading screen -->
+            <Grid 
+                Grid.RowSpan="2"
+                IsVisible="{Binding IsSendingFile}"
+                BackgroundColor="White">
+                <StackLayout VerticalOptions="Center">
+                    <ActivityIndicator 
+                        IsRunning="{Binding IsSendingFile}"
+                        IsVisible="{Binding IsSendingFile}"
+                        Color="{StaticResource PrimaryColor}" />
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        Text="Sending files"
+                        TextColor="{StaticResource PrimaryColor}"/>
+                </StackLayout>
+            </Grid>
+            <!-- Success content -->
+            <Grid 
+                Grid.RowSpan="2"
+                IsVisible="{Binding FileIsSent}"
+                BackgroundColor="{StaticResource PrimaryColor}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill">
+                        <Button 
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            FontSize="50" 
+                            Text="&#xf164;" 
+                            BackgroundColor="{StaticResource PrimaryColor}"
+                            TextColor="White"
+                            FontFamily="{StaticResource FontAwesomeSolid}"
+                            Command="{Binding HomeCommand}" />
+                    </Grid>
+                    <Grid
+                        x:Name="SuccessContent"
+                        Grid.Row="1"
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill"
+                        BackgroundColor="White">
+                        <Label 
+                            x:Name="SuccessLabel"
+                            TextColor="{StaticResource PrimaryColor}"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            Text="Files are saved!"
+                            FontSize="Large" />
+                    </Grid>
+                </Grid>
+            </Grid>  
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
